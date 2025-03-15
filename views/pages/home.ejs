@@ -1,17 +1,451 @@
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhimMoiDaDen|Xem Phim Chill</title>
-    
-    <!-- Thêm favicon -->
+    <title>PhimMoiDaDen | Xem Phim Chill</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    
-    <!-- Nếu dùng favicon.svg -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
-    <h1>Chào mừng đến với Phim Mọi Da Đen!</h1>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <a href="#"><img src="/images/logoPhimMoi-NoBackground.png" alt="PhimMoiDaDen Logo"></a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Trang chủ</a></li>
+                    <li><a href="#">Phim Mới</a></li>
+                    <li class="dropdown">
+                        <a href="#">Thể Loại</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#hanh-dong">Hành động</a></li>
+                            <li><a href="#hai-huoc">Hài hước</a></li>
+                            <li><a href="#kinh-di">Kinh dị</a></li>
+                            <li><a href="#tinh-cam">Tình cảm</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Liên Hệ</a></li>
+                </ul>
+            </nav>
+            <div class="search">
+                <input type="text" placeholder="Tìm kiếm phim...">
+            </div>
+            <div class="bookmark">
+                <a href="/favorites"><img src="/images/star 32px.png" alt="Bookmark"></a>
+            </div>
+            <div class="user">
+                <a href="#"><img src="/images/profile.png" alt="User"></a>
+                <ul class="user-dropdown">
+                    <% if (isAuthenticated) { %>
+                        <li><span>Tài khoản: <%= user.username %></span></li>
+                        <li><span>Email: <%= user.email %></span></li>
+                        <li><a href="/logout" id="logout-option">Đăng Xuất</a></li>
+                    <% } else { %>
+                        <li><a href="#" id="login-option">Đăng Nhập</a></li>
+                        <li><a href="#" id="register-option">Đăng Ký</a></li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="movie-section-1 slideshow">
+            <div class="movie-grid">
+                <div class="movie-card slide active">
+                    <img src="/images/background/black-panther.jpg" alt="Movie Poster" class="main-poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Chiến Binh Báo Đen</h3>
+                        <p class="movie-year">2018</p>
+                        <button class="play-btn">Play</button>
+                        <button class="info-btn">More Info</button>
+                    </div>
+                </div>
+                <div class="movie-card slide">
+                    <img src="/images/background/bg_keHuyDiet.jpg" alt="Movie Poster" class="main-poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Kẻ Hủy Diệt</h3>
+                        <p class="movie-year">2023</p>
+                        <button class="play-btn">Play</button>
+                        <button class="info-btn">More Info</button>
+                    </div>
+                </div>
+                <div class="movie-card slide">
+                    <img src="/images/background/bg_NhatKyTDCuaToi.jpeg" alt="Movie Poster" class="main-poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Nhật Ký Tự Do</h3>
+                        <p class="movie-year">2021</p>
+                        <button class="play-btn">Play</button>
+                        <button class="info-btn">More Info</button>
+                    </div>
+                </div>
+                <div class="movie-card slide">
+                    <img src="/images/background/bg_hanhTinhCat.jpg" alt="Movie Poster" class="main-poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Hành Tinh Cát</h3>
+                        <p class="movie-year">2024</p>
+                        <button class="play-btn">Play</button>
+                        <button class="info-btn">More Info</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="movie-section">
+            <div class="movie-grid">
+                <% if (movies && movies.length > 0) { %>
+                    <% movies.forEach(function(movie) { %>
+                        <div class="movie-card">
+                            <img src="<%= movie.poster_url %>" alt="Movie Poster">
+                            <div class="movie-info">
+                                <h3><%= movie.title %></h3>
+                                <p><%= movie.year %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p>Không có phim nào.</p>
+                <% } %>
+            </div>
+        </section>
+        <section class="movie-section" id="hanh-dong">
+            <h2 class="section-title">Hành Động</h2>
+            <div class="movie-grid">
+                <div class="movie-card">
+                    <img src="/images/k9g1pz9q_660x946-blackpanther.png" alt="Movie Poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Chiến Binh Báo Đen</h3>
+                        <p class="movie-year">2018</p>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/images/OIP.jpg" alt="Movie Poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Kẻ Hủy Diệt</h3>
+                        <p class="movie-year">2023</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="movie-section" id="hai-huoc">
+            <h2 class="section-title">Hài Hước</h2>
+            <div class="movie-grid">
+                <div class="movie-card">
+                    <img src="/images/OIP.jpg" alt="Movie Poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Phim Hài Hước 1</h3>
+                        <p class="movie-year">2022</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="movie-section" id="kinh-di">
+            <h2 class="section-title">Kinh Dị</h2>
+            <div class="movie-grid">
+                <div class="movie-card">
+                    <img src="/images/logoPhimMoi.png" alt="Movie Poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Phim Kinh Dị 1</h3>
+                        <p class="movie-year">2023</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="movie-section" id="tinh-cam">
+            <h2 class="section-title">Tình Cảm</h2>
+            <div class="movie-grid">
+                <div class="movie-card">
+                    <img src="/images/my-liberation-notes-poster-1.jpg" alt="Movie Poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title">Nhật Ký Tự Do</h3>
+                        <p class="movie-year">2021</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+<!-- Modal Đăng Ký -->
+<div id="register-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Đăng Ký</h2>
+        <form action="/register" method="POST" id="register-form">
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Tên đăng nhập" required>
+            </div>
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Mật khẩu" required>
+            </div>
+            <button type="submit" class="modal-btn">Đăng Ký</button>
+        </form>
+        <p class="switch-text">Đã có tài khoản? <a href="#" id="switch-to-login">Đăng Nhập</a></p>
+    </div>
+</div>
+
+<!-- Modal Đăng Nhập -->
+<div id="login-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Đăng Nhập</h2>
+        <form action="/login" method="POST" id="login-form">
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Mật khẩu" required>
+            </div>
+            <button type="submit" class="modal-btn">Đăng Nhập</button>
+        </form>
+        <p class="switch-text">Chưa có tài khoản? <a href="#" id="switch-to-register">Đăng Ký</a></p>
+    </div>
+</div>
+
+<script>
+    // Slideshow logic (giữ nguyên)
+    document.addEventListener("DOMContentLoaded", function() {
+        const slides = document.querySelectorAll('.movie-section-1.slideshow .slide');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === index) {
+                    slide.classList.add('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        showSlide(currentSlide);
+        setInterval(nextSlide, 10000);
+    });
+
+    // Modal logic (thay thế bằng đoạn mới)
+    document.addEventListener("DOMContentLoaded", function() {
+        const registerModal = document.getElementById("register-modal");
+        const loginModal = document.getElementById("login-modal");
+        const registerBtn = document.getElementById("register-option");
+        const loginBtn = document.getElementById("login-option");
+        const switchToLogin = document.getElementById("switch-to-login");
+        const switchToRegister = document.getElementById("switch-to-register");
+        const closeBtns = document.querySelectorAll(".modal .close");
+
+        // Hàm mở modal
+        function openModal(modal) {
+            modal.style.display = "flex";
+            setTimeout(() => modal.classList.add("active"), 10);
+        }
+
+        // Hàm đóng modal
+        function closeModal(modal) {
+            modal.classList.remove("active");
+            setTimeout(() => modal.style.display = "none", 300);
+        }
+
+        // Mở modal Đăng Ký
+        registerBtn.addEventListener("click", function(event) {
+            event.preventDefault();
+            openModal(registerModal);
+        });
+
+        // Mở modal Đăng Nhập
+        loginBtn.addEventListener("click", function(event) {
+            event.preventDefault();
+            openModal(loginModal);
+        });
+
+        // Đóng modal khi nhấp nút close
+        closeBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                closeModal(registerModal);
+                closeModal(loginModal);
+            });
+        });
+
+        // Đóng modal khi nhấp ngoài
+        window.addEventListener("click", function(event) {
+            if (event.target === registerModal) {
+                closeModal(registerModal);
+            } else if (event.target === loginModal) {
+                closeModal(loginModal);
+            }
+        });
+
+        // Chuyển từ Đăng Ký sang Đăng Nhập
+        switchToLogin.addEventListener("click", function(event) {
+            event.preventDefault();
+            closeModal(registerModal);
+            setTimeout(() => openModal(loginModal), 300);
+        });
+
+        // Chuyển từ Đăng Nhập sang Đăng Ký
+        switchToRegister.addEventListener("click", function(event) {
+            event.preventDefault();
+            closeModal(loginModal);
+            setTimeout(() => openModal(registerModal), 300);
+        });
+
+       // Xử lý form đăng ký
+const registerForm = document.getElementById("register-form");
+if (registerForm) {
+    registerForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        // Lấy dữ liệu từ form
+        const formData = new FormData(this);
+        const userData = {
+            username: formData.get('username'),
+            email: formData.get('email'),
+            password: formData.get('password')
+        };
+        
+        // Sử dụng JSON thay vì FormData
+        fetch("/register", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Đăng ký thành công! Vui lòng đăng nhập.");
+                closeModal(registerModal);
+                openModal(loginModal);
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        })
+        .catch(error => alert("Lỗi đăng ký: " + error.message));
+    });
+}
+
+// Xử lý form đăng nhập
+const loginForm = document.getElementById("login-form");
+if (loginForm) {
+    loginForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        // Lấy dữ liệu từ form
+        const formData = new FormData(this);
+        const loginData = {
+            email: formData.get('email'),
+            password: formData.get('password')
+        };
+        
+        // Gửi dữ liệu đăng nhập
+        fetch("/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(loginData)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.json().then(err => { throw new Error(err.message || "Đăng nhập thất bại"); });
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                closeModal(loginModal);
+                window.location.reload(); // Tải lại trang để cập nhật giao diện
+            }
+        })
+        .catch(error => alert("Lỗi đăng nhập: " + error.message));
+    });
+}
+    });
+   
+    // Header scroll effect (giữ nguyên)
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('header');
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Smooth scroll for genre links (giữ nguyên)
+    document.addEventListener("DOMContentLoaded", function() {
+        const genreLinks = document.querySelectorAll('.dropdown-menu a');
+        const headerHeight = document.querySelector('header').offsetHeight;
+
+        genreLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    const targetPosition = targetSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+    // Kiểm tra trạng thái đăng nhập (giả sử bạn có một cách để lưu trữ thông tin này)
+    // Ví dụ: kiểm tra localStorage hoặc cookie
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    
+    // Lấy phần user dropdown
+    const userDropdown = document.querySelector('.user-dropdown');
+    
+    // Nếu đã đăng nhập, thay đổi nội dung dropdown
+    if (isLoggedIn && userData) {
+        // Xóa các phần tử hiện tại
+        userDropdown.innerHTML = '';
+        
+        // Thêm thông tin người dùng
+        const usernameItem = document.createElement('li');
+        usernameItem.innerHTML = `<span>Tài khoản: ${userData.username || 'User'}</span>`;
+        userDropdown.appendChild(usernameItem);
+        
+        const emailItem = document.createElement('li');
+        emailItem.innerHTML = `<span>Email: ${userData.email || ''}</span>`;
+        userDropdown.appendChild(emailItem);
+        
+        // Thêm tùy chọn đăng xuất
+        const logoutItem = document.createElement('li');
+        logoutItem.innerHTML = '<a href="#" id="logout-option">Đăng Xuất</a>';
+        userDropdown.appendChild(logoutItem);
+        
+        // Xử lý sự kiện đăng xuất
+        document.getElementById('logout-option').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Xóa thông tin đăng nhập
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userData');
+            
+            // Refresh trang
+            window.location.reload();
+        });
+    }
+});
+</script>
 </body>
 </html>
