@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thể loại Phim</title>
+</head>
+<body>
+    <h1>Danh sách thể loại</h1>
+    <ul>
+        <% categories.forEach(category => { %>
+            <li>
+                <a href="/categories/<%= category.id %>/movies"><%= category.name %></a>
+            </li>
+        <% }); %>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Yêu thích | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Liên kết CSS nếu cần -->
+</head>
+<body>
+    <header>
+        <!-- Có thể thêm header giống home.ejs nếu muốn -->
+        <div class="container">
+            <div class="logo">
+                <a href="/"><img src="/images/logoPhimMoi-NoBackground.png" alt="PhimMoiDaDen Logo"></a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="movie-section">
+            <h1>Danh sách yêu thích</h1>
+            <div class="movie-grid">
+                <% if (favorites && favorites.length > 0) { %>
+                    <% favorites.forEach(favorite => { %>
+                        <div class="movie-card">
+                            <img src="<%= favorite.movie.poster_url %>" alt="Movie Poster">
+                            <div class="movie-info">
+                                <h3><%= favorite.movie.title %></h3>
+                                <p><%= favorite.movie.year %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p>Chưa có phim nào trong danh sách yêu thích.</p>
+                <% } %>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
