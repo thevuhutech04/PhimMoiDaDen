@@ -1,8 +1,8 @@
 const sql = require('mssql');
 
 const config = {
-    user: 'sa',
-    password: '123456',
+    user: 'thevu2109',
+    password: 'thevu2109',
     server: 'localhost',
     database: 'movie_db',
     options: {

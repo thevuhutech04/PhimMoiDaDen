@@ -24,6 +24,7 @@ app.use(session({
 
 // Routes
 app.use('/', routes);
+const userRoutes = require("./routes/userRoutes");
 
 // Error handling
 app.use((req, res, next) => {

@@ -1,83 +1,119 @@
 // controllers/userController.js
-const userModel = require("../models/userModel");
+const db = require('../config/db');
+const bcrypt = require('bcrypt');
 
 const register = async (req, res) => {
     try {
-        console.log("Dữ liệu từ req.body:", req.body); // Log data received
-
-        // Extract form data
         const { username, email, password } = req.body;
 
-        // Validate form data
+        // Validation đầu vào
         if (!username || !email || !password) {
-            return res.status(400).send("Vui lòng điền đầy đủ thông tin");
+            return res.status(400).json({ message: 'Vui lòng cung cấp đầy đủ username, email và password' });
         }
 
-        // Validate email format
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).send("Email không hợp lệ");
+        // Kiểm tra username đã tồn tại
+        const checkUsername = await db.pool.request()
+            .input('username', username)
+            .query('SELECT * FROM Users WHERE username = @username');
+
+        if (checkUsername.recordset.length > 0) {
+            return res.status(400).json({ message: 'Tên đăng nhập đã tồn tại' });
         }
 
-        // Validate password
-        if (password.length < 6) {
-            return res.status(400).send("Mật khẩu phải có ít nhất 6 ký tự");
+        // Kiểm tra email đã tồn tại
+        const checkEmail = await db.pool.request()
+            .input('email', email)
+            .query('SELECT * FROM Users WHERE email = @email');
+
+        if (checkEmail.recordset.length > 0) {
+            return res.status(400).json({ message: 'Email đã được sử dụng' });
         }
 
-        // Register user (model handles the database operations)
-        await userModel.register(username, email, password);
-        res.status(201).send("Đăng ký thành công");
-    } catch (err) {
-        console.error("Lỗi trong register:", err);
-        res.status(500).send(err.message);
+        // Mã hóa mật khẩu
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Thêm user mới vào database, dùng giá trị số cho role (1 = user)
+        const result = await db.pool.request()
+            .input('username', username)
+            .input('email', email)
+            .input('password', hashedPassword)
+            .input('role', 1) // Sửa thành giá trị số thay vì chuỗi 'user'
+            .query(`
+                INSERT INTO Users (username, email, password, role)
+                VALUES (@username, @email, @password, @role);
+                SELECT SCOPE_IDENTITY() AS user_id;
+            `);
+
+        const userId = result.recordset[0].user_id;
+
+        // Tạo session
+        req.session.isAuthenticated = true;
+        req.session.user = {
+            id: userId,
+            username: username,
+            email: email
+        };
+
+        res.json({ 
+            success: true, 
+            message: 'Đăng ký thành công',
+            user: {
+                username: username,
+                email: email
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi đăng ký:', error.message, error.stack);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi đăng ký', error: error.message });
     }
 };
 
 const login = async (req, res) => {
     try {
-        // Extract login data
         const { email, password } = req.body;
-        
-        // Validate login data
-        if (!email || !password) {
-            return res.status(400).json({ message: "Vui lòng điền email và mật khẩu" });
+
+        // Tìm user theo email
+        const result = await db.pool.request()
+            .input('email', email)
+            .query('SELECT * FROM Users WHERE email = @email');
+
+        if (result.recordset.length === 0) {
+            return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
         }
-        
-        // Authenticate user
-        const user = await userModel.authenticate(email, password);
-        if (!user) {
-            return res.status(401).json({ message: "Email hoặc mật khẩu không đúng" });
+
+        const user = result.recordset[0];
+
+        // Kiểm tra mật khẩu
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            return res.status(401).json({ message: 'Email hoặc mật khẩu không đúng' });
         }
-        
-        // Set session
+
+        // Tạo session cho user
         req.session.isAuthenticated = true;
         req.session.user = {
             id: user.user_id,
             username: user.username,
             email: user.email
         };
-        
-        // Trả về success và thông tin người dùng
-        res.status(200).json({ 
-            success: true,
+
+        res.json({ 
+            success: true, 
+            message: 'Đăng nhập thành công',
             user: {
                 username: user.username,
                 email: user.email
             }
         });
-    } catch (err) {
-        console.error("Lỗi trong login:", err);
-        res.status(500).json({ message: err.message });
+    } catch (error) {
+        console.error('Lỗi đăng nhập:', error);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi đăng nhập' });
     }
 };
+
 const logout = (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error("Lỗi khi đăng xuất:", err);
-            return res.status(500).json({ message: "Lỗi khi đăng xuất" });
-        }
-        res.redirect('/');
-    });
+    req.session.destroy();
+    res.redirect('/');
 };
 
 module.exports = {

@@ -330,7 +330,7 @@ if (registerForm) {
 // Xử lý form đăng nhập
 const loginForm = document.getElementById("login-form");
 if (loginForm) {
-    loginForm.addEventListener("submit", function(event) {
+    loginForm.addEventListener("submit", async function(event) {
         event.preventDefault();
         
         // Lấy dữ liệu từ form
@@ -340,28 +340,28 @@ if (loginForm) {
             password: formData.get('password')
         };
         
-        // Gửi dữ liệu đăng nhập
-        fetch("/login", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginData)
-        })
-        .then(response => {
+        try {
+            // Gửi dữ liệu đăng nhập
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            });
+
+            const data = await response.json();
+            
             if (response.ok) {
-                return response.json();
-            } else {
-                return response.json().then(err => { throw new Error(err.message || "Đăng nhập thất bại"); });
-            }
-        })
-        .then(data => {
-            if (data.success) {
+                alert("Đăng nhập thành công!");
                 closeModal(loginModal);
                 window.location.reload(); // Tải lại trang để cập nhật giao diện
+            } else {
+                throw new Error(data.message || "Đăng nhập thất bại");
             }
-        })
-        .catch(error => alert("Lỗi đăng nhập: " + error.message));
+        } catch (error) {
+            alert("Lỗi đăng nhập: " + error.message);
+        }
     });
 }
     });
