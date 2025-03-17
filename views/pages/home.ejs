@@ -316,12 +316,19 @@ if (registerForm) {
         })
         .then(response => {
             if (response.ok) {
-                alert("Đăng ký thành công! Vui lòng đăng nhập.");
-                closeModal(registerModal);
-                openModal(loginModal);
+                closeModal(registerModal); // Đóng modal đăng ký trước
+                Swal.fire({
+                    title: "Đăng ký thành công!",
+                    text: "Vui lòng đăng nhập.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    openModal(loginModal); // Mở modal đăng nhập sau khi nhấn OK
+                });
             } else {
                 return response.text().then(text => { throw new Error(text); });
             }
+            
         })
         .catch(error => alert("Lỗi đăng ký: " + error.message));
     });
@@ -353,12 +360,20 @@ if (loginForm) {
             const data = await response.json();
             
             if (response.ok) {
-                alert("Đăng nhập thành công!");
                 closeModal(loginModal);
-                window.location.reload(); // Tải lại trang để cập nhật giao diện
+                Swal.fire({
+                    title: "Đăng nhập thành công!",
+                    text: `Chào mừng bạn, ${loginData.email}!`,
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    
+                    window.location.reload(); // Chỉ reload sau khi người dùng nhấn OK
+                });
             } else {
                 throw new Error(data.message || "Đăng nhập thất bại");
             }
+            
         } catch (error) {
             alert("Lỗi đăng nhập: " + error.message);
         }
@@ -614,5 +629,7 @@ if (loginForm) {
 
 <!-- Thêm Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 </html>
