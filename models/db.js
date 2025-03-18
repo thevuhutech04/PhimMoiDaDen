@@ -4,8 +4,8 @@ const config = {
   server: "localhost",
   port: 1433,
   database: "movie_db", // Tên database của bạn
-  user: "cuong142", // Thay bằng tài khoản SQL của bạn
-  password: "cuong142.", // Thay bằng mật khẩu
+  user: "thevu2109", // Thay bằng tài khoản SQL của bạn
+  password: "thevu2109", // Thay bằng mật khẩu
   options: {
     encrypt: false,
     trustServerCertificate: true

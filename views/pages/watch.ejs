@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= movie.title %> | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="watch-container">
+        <div class="video-container">
+            <% if (movie.video_url) { %>
+                <iframe 
+                    id="moviePlayer"
+                    src="<%= movie.video_url %>"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            <% } else { %>
+                <div class="no-video">
+                    <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
+                    <p>Phim chưa được cập nhật</p>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="movie-details">
+            <h1><%= movie.title %></h1>
+            <p class="description"><%= movie.description %></p>
+            <p class="year"><%= movie.created_at ? new Date(movie.created_at).getFullYear() : 'N/A' %></p>
+        </div>
+    </main>
+
+    <style>
+        .watch-container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 0 20px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #moviePlayer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .no-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        .no-video img {
+            max-width: 300px;
+            max-height: 400px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .no-video p {
+            font-size: 18px;
+            color: #ff4444;
+        }
+
+        .movie-details {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .movie-details h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+
+        .description {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .year {
+            color: #ccc;
+            font-size: 14px;
+        }
+    </style>
+
+    <script>
+        // Lưu vị trí xem cuối cùng
+        const video = document.getElementById('moviePlayer');
+        const savedTime = localStorage.getItem(`videoTime-${<%= movie.movie_id %>}`);
+        
+        if (savedTime) {
+            video.currentTime = parseFloat(savedTime);
+        }
+
+        video.addEventListener('timeupdate', () => {
+            localStorage.setItem(`videoTime-${<%= movie.movie_id %>}`, video.currentTime);
+        });
+    </script>
+    <%- include('../partials/footer') %>
+</body>
+</html> 

@@ -1,0 +1,97 @@
+<!-- filepath: c:\Users\dauth\OneDrive\Documents\Đồ Án\ltwweb\PhimMoiDaDen\views\partials\footer.ejs -->
+<footer>
+    <div class="footer-container">
+        <div class="footer-section">
+            <div class="logo">
+                <a href="/"><img src="/images/logoPhimMoi-NoBackground.png" alt="PhimMoiDaDen Logo"></a>
+            </div>
+            <p class="description">
+                PhimMoiDaDen - Trang web xem phim trực tuyến chất lượng cao, cập nhật phim mới nhất mỗi ngày.
+            </p>
+        </div>
+        <div class="footer-section">
+            <h3>Trợ giúp</h3>
+            <ul>
+                <li><a href="/faq">Hỏi đáp</a></li>
+                <li><a href="/contact">Liên hệ</a></li>
+                <li><a href="/news">Tin tức</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Thông tin</h3>
+            <ul>
+                <li><a href="/terms">Điều khoản sử dụng</a></li>
+                <li><a href="/privacy">Chính sách riêng tư</a></li>
+                <li><a href="/copyright">Khiếu nại bản quyền</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2023 PhimMoiDaDen. Tất cả các quyền được bảo lưu.</p>
+    </div>
+</footer>
+
+<style>
+    footer {
+        background: #1f1f1f;
+        color: #fff;
+        padding: 40px 20px;
+        font-size: 14px;
+    }
+
+    .footer-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .footer-section {
+        flex: 1;
+        margin: 10px;
+    }
+
+    .footer-section h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #E50914;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 8px;
+    }
+
+    .footer-section ul li a {
+        color: #fff;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .footer-section ul li a:hover {
+        color: #E50914;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #ccc;
+    }
+
+    .logo img {
+        max-width: 150px;
+        margin-bottom: 10px;
+    }
+
+    .description {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #ccc;
+    }
+</style>

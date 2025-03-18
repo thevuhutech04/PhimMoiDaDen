@@ -58,120 +58,71 @@
     <main>
         <section class="movie-section-1 slideshow">
             <div class="movie-grid">
-                <div class="movie-card slide active">
-                    <img src="/images/background/black-panther.jpg" alt="Movie Poster" class="main-poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Chiến Binh Báo Đen</h3>
-                        <p class="movie-year">2018</p>
-                        <button class="play-btn">Play</button>
-                        <button class="info-btn">More Info</button>
-                    </div>
-                </div>
-                <div class="movie-card slide">
-                    <img src="/images/background/bg_keHuyDiet.jpg" alt="Movie Poster" class="main-poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Kẻ Hủy Diệt</h3>
-                        <p class="movie-year">2023</p>
-                        <button class="play-btn">Play</button>
-                        <button class="info-btn">More Info</button>
-                    </div>
-                </div>
-                <div class="movie-card slide">
-                    <img src="/images/background/bg_NhatKyTDCuaToi.jpeg" alt="Movie Poster" class="main-poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Nhật Ký Tự Do</h3>
-                        <p class="movie-year">2021</p>
-                        <button class="play-btn">Play</button>
-                        <button class="info-btn">More Info</button>
-                    </div>
-                </div>
-                <div class="movie-card slide">
-                    <img src="/images/background/bg_hanhTinhCat.jpg" alt="Movie Poster" class="main-poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Hành Tinh Cát</h3>
-                        <p class="movie-year">2024</p>
-                        <button class="play-btn">Play</button>
-                        <button class="info-btn">More Info</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="movie-section">
-            <div class="movie-grid">
-                <% if (movies && movies.length > 0) { %>
-                    <% movies.forEach(function(movie) { %>
-                        <div class="movie-card">
-                            <img src="<%= movie.poster_url %>" alt="Movie Poster">
+                <% if (slideshowMovies && slideshowMovies.length > 0) { %>
+                    <% slideshowMovies.forEach(function(movie, index) { %>
+                        <div class="movie-card slide <%= index === 0 ? 'active' : '' %>">
+                            <img src="<%= movie.poster_url %>" alt="<%= movie.title %>" class="slide-image">
                             <div class="movie-info">
-                                <h3><%= movie.title %></h3>
-                                <p><%= movie.year %></p>
+                                <h3 class="movie-title"><%= movie.title %></h3>
+                                <p class="movie-description"><%= movie.description || 'Không có mô tả' %></p>
+                                <p class="movie-year"><%= movie.created_at ? new Date(movie.created_at).getFullYear() : 'N/A' %></p>
+                                <div class="button-group">
+                                    <button class="play-btn" onclick="window.location.href='/watch/<%= movie.movie_id %>'">
+                                        <i class="fas fa-play"></i> Xem phim
+                                    </button>
+                                    <button class="info-btn" onclick="showMovieInfo('<%= movie.movie_id %>')">
+                                        <i class="fas fa-info-circle"></i> Chi tiết
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     <% }); %>
                 <% } else { %>
-                    <p>Không có phim nào.</p>
+                    <div class="movie-card slide active">
+                        <img src="/images/logoPhimMoi.png" alt="No Movies" class="slide-image">
+                        <div class="movie-info">
+                            <h3 class="movie-title">Không có phim</h3>
+                            <p class="movie-year">N/A</p>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+            <button class="slide-nav prev" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+            <button class="slide-nav next" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+            <div class="slide-dots">
+                <% for(let i = 0; slideshowMovies && i < slideshowMovies.length; i++) { %>
+                    <span class="dot" data-index="<%= i %>"></span>
                 <% } %>
             </div>
         </section>
-        <section class="movie-section" id="hanh-dong">
-            <h2 class="section-title">Hành Động</h2>
-            <div class="movie-grid">
-                <div class="movie-card">
-                    <img src="/images/k9g1pz9q_660x946-blackpanther.png" alt="Movie Poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Chiến Binh Báo Đen</h3>
-                        <p class="movie-year">2018</p>
-                    </div>
-                </div>
-                <div class="movie-card">
-                    <img src="/images/OIP.jpg" alt="Movie Poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Kẻ Hủy Diệt</h3>
-                        <p class="movie-year">2023</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <section class="movie-section" id="hai-huoc">
-            <h2 class="section-title">Hài Hước</h2>
-            <div class="movie-grid">
-                <div class="movie-card">
-                    <img src="/images/OIP.jpg" alt="Movie Poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Phim Hài Hước 1</h3>
-                        <p class="movie-year">2022</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="movie-section" id="kinh-di">
-            <h2 class="section-title">Kinh Dị</h2>
-            <div class="movie-grid">
-                <div class="movie-card">
-                    <img src="/images/logoPhimMoi.png" alt="Movie Poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Phim Kinh Dị 1</h3>
-                        <p class="movie-year">2023</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="movie-section" id="tinh-cam">
-            <h2 class="section-title">Tình Cảm</h2>
-            <div class="movie-grid">
-                <div class="movie-card">
-                    <img src="/images/my-liberation-notes-poster-1.jpg" alt="Movie Poster">
-                    <div class="movie-info">
-                        <h3 class="movie-title">Nhật Ký Tự Do</h3>
-                        <p class="movie-year">2021</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Hiển thị phim theo thể loại -->
+        <% if (moviesByGenre && Object.keys(moviesByGenre).length > 0) { %>
+            <% Object.keys(moviesByGenre).forEach(function(genre) { %>
+                <% if (moviesByGenre[genre] && moviesByGenre[genre].length > 0) { %>
+                    <section class="movie-section" id="<%= genre.toLowerCase().replace(/\s+/g, '-') %>">
+                        <h2 class="section-title"><%= genre %></h2>
+                        <div class="movie-grid">
+                            <% moviesByGenre[genre].forEach(function(movie) { %>
+                                <div class="movie-card">
+                                    <a href="/watch/<%= movie.movie_id %>">
+                                        <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
+                                        <div class="movie-overlay">
+                                            <h3><%= movie.title %></h3>
+                                            <p><%= movie.created_at ? new Date(movie.created_at).getFullYear() : 'N/A' %></p>
+                                        </div>
+                                    </a>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </section>
+                <% } %>
+            <% }); %>
+        <% } else { %>
+            <p>Không có phim nào.</p>
+        <% } %>
     </main>
+
 <!-- Modal Đăng Ký -->
 <div id="register-modal" class="modal">
     <div class="modal-content">
@@ -212,28 +163,69 @@
 </div>
 
 <script>
-    // Slideshow logic (giữ nguyên)
-    document.addEventListener("DOMContentLoaded", function() {
-        const slides = document.querySelectorAll('.movie-section-1.slideshow .slide');
-        let currentSlide = 0;
+    // Slideshow logic
+    let currentSlide = 0;
+    let slideInterval;
+    const slideDelay = 5000; // 5 seconds
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.remove('active');
-                if (i === index) {
-                    slide.classList.add('active');
+    function showSlide(index) {
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        
+        if (slides.length === 0) return;
+        
+        currentSlide = (index + slides.length) % slides.length;
+        
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    function goToSlide(index) {
+        showSlide(index);
+        resetSlideTimer();
+    }
+
+    function resetSlideTimer() {
+        if (slideInterval) {
+            clearInterval(slideInterval);
+        }
+        slideInterval = setInterval(nextSlide, slideDelay);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const slides = document.querySelectorAll('.slide');
+        if (slides.length > 1) {
+            showSlide(0);
+            resetSlideTimer();
+
+            // Thêm xử lý phím mũi tên
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                    resetSlideTimer();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                    resetSlideTimer();
                 }
             });
         }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % slides.length;
-            showSlide(currentSlide);
-        }
-
-        showSlide(currentSlide);
-        setInterval(nextSlide, 10000);
     });
+
+    // Hàm hiển thị thông tin chi tiết phim
+    function showMovieInfo(movieId) {
+        window.location.href = `/movie/${movieId}`;
+    }
 
     // Modal logic (thay thế bằng đoạn mới)
     document.addEventListener("DOMContentLoaded", function() {
@@ -324,12 +316,19 @@ if (registerForm) {
         })
         .then(response => {
             if (response.ok) {
-                alert("Đăng ký thành công! Vui lòng đăng nhập.");
-                closeModal(registerModal);
-                openModal(loginModal);
+                closeModal(registerModal); // Đóng modal đăng ký trước
+                Swal.fire({
+                    title: "Đăng ký thành công!",
+                    text: "Vui lòng đăng nhập.",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    openModal(loginModal); // Mở modal đăng nhập sau khi nhấn OK
+                });
             } else {
                 return response.text().then(text => { throw new Error(text); });
             }
+            
         })
         .catch(error => alert("Lỗi đăng ký: " + error.message));
     });
@@ -338,7 +337,7 @@ if (registerForm) {
 // Xử lý form đăng nhập
 const loginForm = document.getElementById("login-form");
 if (loginForm) {
-    loginForm.addEventListener("submit", function(event) {
+    loginForm.addEventListener("submit", async function(event) {
         event.preventDefault();
         
         // Lấy dữ liệu từ form
@@ -348,28 +347,36 @@ if (loginForm) {
             password: formData.get('password')
         };
         
-        // Gửi dữ liệu đăng nhập
-        fetch("/login", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginData)
-        })
-        .then(response => {
+        try {
+            // Gửi dữ liệu đăng nhập
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            });
+
+            const data = await response.json();
+            
             if (response.ok) {
-                return response.json();
-            } else {
-                return response.json().then(err => { throw new Error(err.message || "Đăng nhập thất bại"); });
-            }
-        })
-        .then(data => {
-            if (data.success) {
                 closeModal(loginModal);
-                window.location.reload(); // Tải lại trang để cập nhật giao diện
+                Swal.fire({
+                    title: "Đăng nhập thành công!",
+                    text: `Chào mừng bạn, ${loginData.email}!`,
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    
+                    window.location.reload(); // Chỉ reload sau khi người dùng nhấn OK
+                });
+            } else {
+                throw new Error(data.message || "Đăng nhập thất bại");
             }
-        })
-        .catch(error => alert("Lỗi đăng nhập: " + error.message));
+            
+        } catch (error) {
+            alert("Lỗi đăng nhập: " + error.message);
+        }
     });
 }
     });
@@ -446,6 +453,183 @@ if (loginForm) {
         });
     }
 });
+
+    // Genre dropdown update
+    document.addEventListener("DOMContentLoaded", function() {
+        const genreList = document.querySelector('.dropdown-menu');
+        const genreData = document.querySelector('script[data-genres]').getAttribute('data-genres');
+        const genres = JSON.parse(genreData || '[]');
+        
+        genreList.innerHTML = '';
+        
+        genres.forEach(function(genre) {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = '#' + genre.toLowerCase().replace(/\s+/g, '-');
+            a.textContent = genre;
+            li.appendChild(a);
+            genreList.appendChild(li);
+        });
+    });
 </script>
+
+<!-- Thêm script data -->
+<script data-genres='<%- JSON.stringify(genres || []) %>'></script>
+
+<style>
+    .movie-section-1.slideshow {
+        position: relative;
+        height: 600px;
+        width: 100%;
+    }
+
+    .slide {
+        display: none;
+        height: 100%;
+    }
+
+    .slide.active {
+        display: block;
+    }
+
+    .slide-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .movie-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        color: white;
+        background: rgba(0,0,0,0.7);
+    }
+
+    .button-group {
+        margin-top: 10px;
+    }
+
+    .play-btn, .info-btn {
+        padding: 8px 16px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .play-btn {
+        background: #e50914;
+        color: white;
+    }
+
+    .info-btn {
+        background: #6d6d6e;
+        color: white;
+    }
+
+    .slide-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.5);
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .prev { left: 10px; }
+    .next { right: 10px; }
+
+    .slide-dots {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 5px;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        cursor: pointer;
+    }
+
+    .dot.active {
+        background: white;
+    }
+
+    .movie-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .movie-card:hover {
+        transform: scale(1.05);
+    }
+
+    .movie-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .movie-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        color: white;
+        padding: 15px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .movie-card:hover .movie-overlay {
+        opacity: 1;
+    }
+
+    .movie-overlay h3 {
+        margin: 0;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+
+    .movie-overlay p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    .movie-card a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        color: white;
+    }
+
+    .movie-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+</style>
+
+<!-- Thêm Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<%- include('../partials/footer') %>
 </body>
 </html>
