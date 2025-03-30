@@ -3,38 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách Yêu thích | PhimMoiDaDen</title>
-    <link rel="stylesheet" href="/css/style.css"> <!-- Liên kết CSS nếu cần -->
+    <title>Phim Yêu Thích | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
-    <header>
-        <!-- Có thể thêm header giống home.ejs nếu muốn -->
-        <div class="container">
-            <div class="logo">
-                <a href="/"><img src="/images/logoPhimMoi-NoBackground.png" alt="PhimMoiDaDen Logo"></a>
-            </div>
-        </div>
-    </header>
+    <%- include('../partials/header') %>
 
     <main>
-        <section class="movie-section">
-            <h1>Danh sách yêu thích</h1>
-            <div class="movie-grid">
-                <% if (favorites && favorites.length > 0) { %>
-                    <% favorites.forEach(favorite => { %>
+        <section class="favorites-section">
+            <h1>Phim Yêu Thích</h1>
+            <% if (favoriteMovies && favoriteMovies.length > 0) { %>
+                <div class="movie-grid">
+                    <% favoriteMovies.forEach(function(movie) { %>
                         <div class="movie-card">
-                            <img src="<%= favorite.movie.poster_url %>" alt="Movie Poster">
-                            <div class="movie-info">
-                                <h3><%= favorite.movie.title %></h3>
-                                <p><%= favorite.movie.year %></p>
-                            </div>
+                            <a href="/watch/<%= movie.movie_id %>">
+                                <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
+                                <div class="movie-overlay">
+                                    <h3><%= movie.title %></h3>
+                                    <p><%= movie.created_at ? new Date(movie.created_at).getFullYear() : 'N/A' %></p>
+                                </div>
+                            </a>
                         </div>
                     <% }); %>
-                <% } else { %>
-                    <p>Chưa có phim nào trong danh sách yêu thích.</p>
-                <% } %>
-            </div>
+                </div>
+            <% } else { %>
+                <div class="no-favorites">
+                    <p>Bạn chưa có phim yêu thích nào.</p>
+                    <a href="/" class="browse-btn">Xem Phim</a>
+                </div>
+            <% } %>
         </section>
     </main>
+
+    <%- include('../partials/footer') %>
+
+    <style>
+        .favorites-section {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .favorites-section h1 {
+            color: #fff;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .no-favorites {
+            text-align: center;
+            padding: 3rem;
+            color: #fff;
+        }
+
+        .no-favorites p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .browse-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: #e50914;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .browse-btn:hover {
+            background-color: #f40612;
+        }
+    </style>
 </body>
 </html>

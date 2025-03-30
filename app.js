@@ -2,6 +2,9 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const routes = require('./routes');
+const movieRoutes = require('./routes/movieRoutes');
+const favoriteRoutes = require('./routes/favoriteRoutes');
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -24,16 +27,22 @@ app.use(session({
 
 // Routes
 app.use('/', routes);
-const userRoutes = require("./routes/userRoutes");
+app.use('/', movieRoutes);
+app.use('/', favoriteRoutes);
+app.use('/', userRoutes);
 
 // Error handling
 app.use((req, res, next) => {
-    res.status(404).send('Không tìm thấy trang');
+    res.status(404).render('error', {
+        message: 'Không tìm thấy trang'
+    });
 });
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Đã xảy ra lỗi!');
+    res.status(500).render('error', {
+        message: 'Đã xảy ra lỗi!'
+    });
 });
 
 // Start server

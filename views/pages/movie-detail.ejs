@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= movie.title %> | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="movie-detail">
+        <div class="movie-detail-container">
+            <div class="movie-poster">
+                <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
+            </div>
+            <div class="movie-info">
+                <h1><%= movie.title %></h1>
+                <div class="movie-meta">
+                    <span class="year"><%= movie.created_at ? new Date(movie.created_at).getFullYear() : 'N/A' %></span>
+                    <span class="genre"><%= movie.genre %></span>
+                </div>
+                <div class="movie-description">
+                    <h2>Mô tả</h2>
+                    <p><%= movie.description || 'Chưa có mô tả' %></p>
+                </div>
+                <div class="movie-actions">
+                    <a href="/watch/<%= movie.movie_id %>" class="watch-btn">
+                        <i class="fas fa-play"></i> Xem Phim
+                    </a>
+                    <% if (isAuthenticated) { %>
+                        <button class="favorite-btn" onclick="toggleFavorite(<%= movie.movie_id %>)">
+                            <i class="fas fa-heart"></i> Yêu Thích
+                        </button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <style>
+        .movie-detail {
+            padding: 2rem;
+            background-color: #1a1a1a;
+            min-height: calc(100vh - 60px);
+        }
+
+        .movie-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+            color: #fff;
+        }
+
+        .movie-poster {
+            flex: 0 0 300px;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .movie-info {
+            flex: 1;
+        }
+
+        .movie-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .movie-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            color: #ccc;
+        }
+
+        .movie-description {
+            margin-bottom: 2rem;
+        }
+
+        .movie-description h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .movie-description p {
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .watch-btn, .favorite-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .watch-btn {
+            background-color: #e50914;
+            color: white;
+        }
+
+        .watch-btn:hover {
+            background-color: #f40612;
+        }
+
+        .favorite-btn {
+            background-color: #333;
+            color: white;
+        }
+
+        .favorite-btn:hover {
+            background-color: #444;
+        }
+
+        @media (max-width: 768px) {
+            .movie-detail-container {
+                flex-direction: column;
+            }
+
+            .movie-poster {
+                flex: 0 0 auto;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+
+    <script>
+        async function toggleFavorite(movieId) {
+            try {
+                const response = await fetch('/api/favorites/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ movieId })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const favoriteBtn = document.querySelector('.favorite-btn');
+                    favoriteBtn.innerHTML = data.isFavorite ? 
+                        '<i class="fas fa-heart"></i> Đã Yêu Thích' : 
+                        '<i class="fas fa-heart"></i> Yêu Thích';
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi thực hiện yêu cầu');
+            }
+        }
+    </script>
+</body>
+</html> 
