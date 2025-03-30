@@ -10,6 +10,17 @@
     <%- include('../partials/header') %>
 
     <main class="watch-container">
+        <% if (typeof messages !== 'undefined' && messages.error) { %>
+            <div class="alert alert-danger">
+                <%= messages.error %>
+            </div>
+        <% } %>
+        <% if (typeof messages !== 'undefined' && messages.success) { %>
+            <div class="alert alert-success">
+                <%= messages.success %>
+            </div>
+        <% } %>
+
         <div class="video-container">
             <% if (movie.video_url) { %>
                 <iframe 
@@ -31,6 +42,45 @@
             <h1><%= movie.title %></h1>
             <p class="description"><%= movie.description %></p>
             <p class="year"><%= movie.created_at ? new Date(movie.created_at).getFullYear() : 'N/A' %></p>
+        </div>
+
+        <div class="comments-section">
+            <h2>Bình luận</h2>
+            
+            <% if (user) { %>
+                <form action="/comment/<%= movie.movie_id %>" method="POST" class="comment-form">
+                    <textarea name="content" placeholder="Viết bình luận của bạn..." required></textarea>
+                    <div class="form-options">
+                        <label>
+                            <input type="checkbox" name="is_anonymous" value="1">
+                            Đăng ẩn danh
+                        </label>
+                        <button type="submit">Gửi bình luận</button>
+                    </div>
+                </form>
+            <% } else { %>
+                <p class="login-notice">Vui lòng <a href="/login">đăng nhập</a> để bình luận</p>
+            <% } %>
+
+            <div class="comments-list">
+                <% if (comments && comments.length > 0) { %>
+                    <% comments.forEach(function(comment) { %>
+                        <div class="comment">
+                            <div class="comment-header">
+                                <span class="comment-author">
+                                    <%= comment.is_anonymous ? 'Người dùng ẩn danh' : comment.username %>
+                                </span>
+                                <span class="comment-date">
+                                    <%= new Date(comment.created_at).toLocaleDateString('vi-VN') %>
+                                </span>
+                            </div>
+                            <p class="comment-content"><%= comment.content %></p>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="no-comments">Chưa có bình luận nào</p>
+                <% } %>
+            </div>
         </div>
     </main>
 
@@ -106,20 +156,144 @@
             color: #ccc;
             font-size: 14px;
         }
+
+        .comments-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .comments-section h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .comment-form {
+            margin-bottom: 30px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            resize: vertical;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .form-options button {
+            padding: 8px 16px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-options button:hover {
+            background: #ff6666;
+        }
+
+        .login-notice {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .login-notice a {
+            color: #ff4444;
+            text-decoration: none;
+        }
+
+        .comment {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .comment-date {
+            color: #888;
+        }
+
+        .comment-content {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .no-comments {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
     </style>
 
     <script>
         // Lưu vị trí xem cuối cùng
         const video = document.getElementById('moviePlayer');
-        const savedTime = localStorage.getItem(`videoTime-${<%= movie.movie_id %>}`);
-        
-        if (savedTime) {
-            video.currentTime = parseFloat(savedTime);
-        }
+        if (video) {
+            const movieId = '<%= movie.movie_id %>';
+            const savedTime = localStorage.getItem(`videoTime-${movieId}`);
+            
+            if (savedTime) {
+                video.currentTime = parseFloat(savedTime);
+            }
 
-        video.addEventListener('timeupdate', () => {
-            localStorage.setItem(`videoTime-${<%= movie.movie_id %>}`, video.currentTime);
-        });
+            video.addEventListener('timeupdate', () => {
+                localStorage.setItem(`videoTime-${movieId}`, video.currentTime);
+            });
+        }
     </script>
     <%- include('../partials/footer') %>
 </body>

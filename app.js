@@ -5,6 +5,7 @@ const routes = require('./routes');
 const movieRoutes = require('./routes/movieRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const userRoutes = require("./routes/userRoutes");
+const flash = require('connect-flash');
 
 const app = express();
 
@@ -21,9 +22,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { secure: false } // set to true if using HTTPS
 }));
+
+// Cấu hình flash messages
+app.use(flash());
+
+// Middleware để truyền messages vào tất cả views
+app.use((req, res, next) => {
+    res.locals.messages = req.flash();
+    next();
+});
 
 // Routes
 app.use('/', routes);
