@@ -37,7 +37,11 @@
                 <input type="text" placeholder="Tìm kiếm phim...">
             </div>
             <div class="bookmark">
+                <% if (isAuthenticated) { %>
                 <a href="/favorites"><img src="/images/star 32px.png" alt="Bookmark"></a>
+                <l%  } else { %>
+                        <a href="#" img src="/images/star 32px.png" alt="Bookmark" id ="login-option"></a></li>
+                    <% } %>
             </div>
             <div class="user">
                 <a href="#"><img src="/images/profile.png" alt="User"></a>
@@ -105,7 +109,7 @@
                         <div class="movie-grid">
                             <% moviesByGenre[genre].forEach(function(movie) { %>
                                 <div class="movie-card">
-                                    <a href="/watch/<%= movie.movie_id %>">
+                                    <a href="/movie/<%= movie.movie_id %>">
                                         <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
                                         <div class="movie-overlay">
                                             <h3><%= movie.title %></h3>
