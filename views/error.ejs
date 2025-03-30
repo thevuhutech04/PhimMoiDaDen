@@ -12,13 +12,16 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
-    <%- include('./partials/header') %>
+    <%- include('./partials/header', {
+        isAuthenticated: false,
+        user: null
+    }) %>
 
     <main class="error-page">
         <div class="error-container">
-            <h1>Oops!</h1>
-            <p class="error-message"><%= message %></p>
-            <a href="/" class="back-home">Về Trang Chủ</a>
+            <h1>Lỗi</h1>
+            <p><%= message %></p>
+            <a href="/" class="back-home">Về trang chủ</a>
         </div>
     </main>
 

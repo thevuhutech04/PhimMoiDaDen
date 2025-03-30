@@ -1,53 +1,51 @@
-const db = require('../config/db');
+const movieModel = require("../models/movieModel");
+const CommentController = require('./commentController');
 
 const getWatchPage = async (req, res) => {
     try {
         const movieId = req.params.id;
-        console.log('Fetching movie with ID:', movieId); // Debug log
+        console.log('Fetching movie with ID:', movieId);
+        
+        const result = await movieModel.getMovieById(movieId);
+        console.log('Query result:', result);
 
-        // Đợi kết nối database
-        await db.pool.connect();
-        
-        // Lấy thông tin phim từ database
-        const query = `
-            SELECT movie_id, title, description, video_url, poster_url, created_at
-            FROM Movies
-            WHERE movie_id = @movieId
-        `;
-        
-        const request = db.pool.request();
-        request.input('movieId', db.sql.Int, parseInt(movieId));
-        
-        console.log('Executing query:', query); // Debug log
-        const result = await request.query(query);
-        console.log('Query result:', result); // Debug log
-        
-        if (!result.recordset || result.recordset.length === 0) {
-            console.log('No movie found with ID:', movieId); // Debug log
-            return res.status(404).render('pages/error', {
-                message: 'Không tìm thấy phim',
-                error: { status: 404 },
-                isAuthenticated: req.session.isAuthenticated,
-                user: req.session.user
-            });
+        // Xử lý cả trường hợp result là array hoặc object
+        let movie;
+        if (Array.isArray(result)) {
+            if (result.length === 0) {
+                console.log('Movie not found');
+                return res.status(404).render('error', {
+                    message: 'Không tìm thấy phim'
+                });
+            }
+            movie = result[0];
+        } else {
+            if (!result) {
+                console.log('Movie not found');
+                return res.status(404).render('error', {
+                    message: 'Không tìm thấy phim'
+                });
+            }
+            movie = result;
         }
 
-        const movie = result.recordset[0];
-        console.log('Found movie:', movie); // Debug log
-        
-        // Render trang xem phim
-        res.render('pages/watch', { 
-            movie,
-            isAuthenticated: req.session.isAuthenticated,
-            user: req.session.user
+        console.log('Found movie:', movie);
+
+        // Lấy danh sách comments
+        const comments = await CommentController.getComments(movieId);
+
+        res.render('pages/watch', {
+            title: movie.title,
+            movie: movie,
+            comments: comments || [],
+            isAuthenticated: req.session && req.session.user ? true : false,
+            user: req.session ? req.session.user : null,
+            messages: req.flash()
         });
     } catch (error) {
-        console.error('Lỗi khi lấy thông tin phim:', error);
-        res.status(500).render('pages/error', {
-            message: 'Đã xảy ra lỗi khi tải phim',
-            error: { status: 500 },
-            isAuthenticated: req.session.isAuthenticated,
-            user: req.session.user
+        console.error('Error in getWatchPage:', error);
+        res.status(500).render('error', {
+            message: 'Có lỗi xảy ra khi tải thông tin phim'
         });
     }
 };
