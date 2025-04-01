@@ -19,8 +19,13 @@
                 <li><a href="/contact">Liên Hệ</a></li>
             </ul>
         </nav>
-        <div class="search">
-            <input type="text" placeholder="Tìm kiếm phim...">
+        <div class="search-box">
+            <form action="/search" method="GET" class="search-form">
+                <input type="text" name="q" placeholder="Tìm kiếm phim..." value="<%= query %>">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
         </div>
         <div class="bookmark">
             <a href="/favorites"><img src="/images/star 32px.png" alt="Bookmark"></a>
@@ -39,4 +44,44 @@
             </ul>
         </div>
     </div>
-</header> 
+</header>
+
+<style>
+    .search-form {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 5px 10px;
+    }
+
+    .search-form input {
+        background: none;
+        border: none;
+        color: white;
+        padding: 5px;
+        width: 200px;
+        outline: none;
+    }
+
+    .search-form input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .search-button {
+        background: none;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+        color: white;
+        transition: color 0.3s ease;
+    }
+
+    .search-button:hover {
+        color: #ffd700;
+    }
+
+    .search-button i {
+        font-size: 16px;
+    }
+</style> 

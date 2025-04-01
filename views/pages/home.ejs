@@ -12,52 +12,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <a href="#"><img src="/images/logoPhimMoi-NoBackground.png" alt="PhimMoiDaDen Logo"></a>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#">Trang chủ</a></li>
-                    <li><a href="#">Phim Mới</a></li>
-                    <li class="dropdown">
-                        <a href="#">Thể Loại</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#hanh-dong">Hành động</a></li>
-                            <li><a href="#hai-huoc">Hài hước</a></li>
-                            <li><a href="#kinh-di">Kinh dị</a></li>
-                            <li><a href="#tinh-cam">Tình cảm</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#">Liên Hệ</a></li>
-                </ul>
-            </nav>
-            <div class="search">
-                <input type="text" placeholder="Tìm kiếm phim...">
-            </div>
-            <div class="bookmark">
-                <% if (isAuthenticated) { %>
-                <a href="/favorites"><img src="/images/star 32px.png" alt="Bookmark"></a>
-                <l%  } else { %>
-                        <a href="#" img src="/images/star 32px.png" alt="Bookmark" id ="login-option"></a></li>
-                    <% } %>
-            </div>
-            <div class="user">
-                <a href="#"><img src="/images/profile.png" alt="User"></a>
-                <ul class="user-dropdown">
-                    <% if (isAuthenticated) { %>
-                        <li><span>Tài khoản: <%= user.username %></span></li>
-                        <li><span>Email: <%= user.email %></span></li>
-                        <li><a href="/logout" id="logout-option">Đăng Xuất</a></li>
-                    <% } else { %>
-                        <li><a href="#" id="login-option">Đăng Nhập</a></li>
-                        <li><a href="#" id="register-option">Đăng Ký</a></li>
-                    <% } %>
-                </ul>
-            </div>
-        </div>
-    </header>
+    <%- include('../partials/header') %>
 
     <main>
         <section class="movie-section-1 slideshow">
