@@ -16,6 +16,9 @@
                         <li><a href="/#tinh-cam">Tình cảm</a></li>
                     </ul>
                 </li>
+                <% if (isAuthenticated) { %>
+                    <li><a href="/add-movie" class="add-movie-link"><i class="fas fa-plus"></i> Thêm Phim</a></li>
+                <% } %>
                 <li><a href="/contact">Liên Hệ</a></li>
             </ul>
         </nav>
@@ -263,5 +266,19 @@
 
     .favorite-link:hover i {
         transform: scale(1.1);
+    }
+
+    .add-movie-link {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .add-movie-link i {
+        font-size: 14px;
+    }
+
+    .add-movie-link:hover {
+        color: #e50914;
     }
 </style> 

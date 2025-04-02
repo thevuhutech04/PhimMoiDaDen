@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Phim Mới | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Thêm SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="add-movie-container">
+        <h1>Thêm Phim Mới</h1>
+        
+        <form id="addMovieForm" class="add-movie-form">
+            <div class="form-group">
+                <label for="title">Tên Phim</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Mô Tả</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="genre">Thể Loại</label>
+                <select id="genre" name="genre" required>
+                    <option value="">Chọn thể loại</option>
+                    <option value="Hành động">Hành động</option>
+                    <option value="Hài hước">Hài hước</option>
+                    <option value="Kinh dị">Kinh dị</option>
+                    <option value="Tình cảm">Tình cảm</option>
+                    <option value="Hoạt hình">Hoạt hình</option>
+                    <option value="Viễn tưởng">Viễn tưởng</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="poster_url">URL Poster</label>
+                <input type="url" id="poster_url" name="poster_url" required>
+            </div>
+
+            <div class="form-group">
+                <label for="video_url">URL Video</label>
+                <input type="url" id="video_url" name="video_url" required>
+            </div>
+
+            <button type="submit" class="submit-btn">Thêm Phim</button>
+        </form>
+    </main>
+
+    <style>
+        .add-movie-container {
+            max-width: 800px;
+            margin: 80px auto 20px;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .add-movie-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e50914;
+        }
+
+        .add-movie-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .submit-btn {
+            padding: 12px;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #f40612;
+        }
+
+        @media (max-width: 768px) {
+            .add-movie-container {
+                margin: 60px 10px 20px;
+            }
+        }
+    </style>
+
+    <script>
+        document.getElementById('addMovieForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const movieData = {};
+            
+            // Lấy và kiểm tra từng trường dữ liệu
+            movieData.title = formData.get('title')?.trim();
+            movieData.description = formData.get('description')?.trim();
+            movieData.genre = formData.get('genre')?.trim();
+            movieData.poster_url = formData.get('poster_url')?.trim();
+            movieData.video_url = formData.get('video_url')?.trim();
+
+            // Log dữ liệu trước khi gửi
+            console.log('Form Data:', {
+                title: movieData.title,
+                description: movieData.description,
+                genre: movieData.genre,
+                poster_url: movieData.poster_url,
+                video_url: movieData.video_url
+            });
+
+            // Kiểm tra dữ liệu trước khi gửi
+            const missingFields = [];
+            if (!movieData.title) missingFields.push('Tên phim');
+            if (!movieData.description) missingFields.push('Mô tả');
+            if (!movieData.genre) missingFields.push('Thể loại');
+            if (!movieData.poster_url) missingFields.push('URL Poster');
+            if (!movieData.video_url) missingFields.push('URL Video');
+
+            if (missingFields.length > 0) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: `Vui lòng điền: ${missingFields.join(', ')}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            try {
+                console.log('Sending data to server:', JSON.stringify(movieData));
+                const response = await fetch('/api/movies/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(movieData)
+                });
+
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Thêm phim mới thành công',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = `/movie/${data.movieId}`;
+                    });
+                } else {
+                    throw new Error(data.message || 'Có lỗi xảy ra');
+                }
+            } catch (error) {
+                console.error('Error details:', error);
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>
+</body>
+</html> 

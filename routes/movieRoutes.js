@@ -97,4 +97,10 @@ router.get('/favorites', isAuthenticated, async (req, res) => {
 // Route xử lý comment
 router.post('/comment/:movieId', isAuthenticated, CommentController.createComment);
 
+// Route hiển thị form thêm phim
+router.get('/add-movie', isAuthenticated, movieController.showAddMovieForm);
+
+// API thêm phim mới
+router.post('/api/movies/add', isAuthenticated, movieController.addMovie);
+
 module.exports = router;
