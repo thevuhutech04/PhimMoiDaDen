@@ -7,8 +7,7 @@ const getAllMovies = async (req, res) => {
         const movies = await movieModel.getAllMovies();
         res.render("index", { 
             movies: movies,
-            isAuthenticated: req.session && req.session.user ? true : false,
-            user: req.session ? req.session.user : null
+            user: req.session.user
         });
     } catch (err) {
         console.error("Lỗi:", err);
@@ -23,8 +22,7 @@ const getMovieById = async (req, res) => {
         if (!movie) return res.status(404).send("Không tìm thấy phim");
         res.render("movieDetail", { 
             movie,
-            isAuthenticated: req.session && req.session.user ? true : false,
-            user: req.session ? req.session.user : null
+            user: req.session.user
         });
     } catch (err) {
         console.error("Lỗi:", err);
@@ -47,8 +45,7 @@ const watchMovie = async (req, res) => {
         res.render('pages/watch', {
             movie,
             comments: comments || [],
-            isAuthenticated: req.session && req.session.user ? true : false,
-            user: req.session ? req.session.user : null
+            user: req.session.user
         });
     } catch (err) {
         console.error('Error in watch page:', err);
@@ -57,8 +54,34 @@ const watchMovie = async (req, res) => {
     }
 };
 
+const showMovieDetail = async (req, res) => {
+    try {
+        const movieId = req.params.id;
+        const movie = await movieModel.getMovieById(movieId);
+        
+        if (!movie) {
+            return res.status(404).render("pages/error", { 
+                message: "Không tìm thấy phim",
+                user: req.session.user
+            });
+        }
+
+        res.render("pages/movie-detail", { 
+            movie,
+            user: req.session.user
+        });
+    } catch (err) {
+        console.error("Lỗi:", err);
+        res.status(500).render("pages/error", { 
+            message: "Lỗi server",
+            user: req.session.user
+        });
+    }
+};
+
 module.exports = { 
     getAllMovies, 
     getMovieById,
-    watchMovie
+    watchMovie,
+    showMovieDetail
 };

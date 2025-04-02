@@ -36,6 +36,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// Middleware để kiểm tra đăng nhập và truyền vào views
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session && req.session.user ? true : false;
+    res.locals.user = req.session ? req.session.user : null;
+    next();
+});
+
 // Routes
 app.use('/', routes);
 app.use('/', movieRoutes);
