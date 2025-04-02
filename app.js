@@ -29,9 +29,17 @@ app.use(session({
 // Cấu hình flash messages
 app.use(flash());
 
-// Middleware để truyền messages vào tất cả views
+// Middleware để truyền messages và query vào tất cả views
 app.use((req, res, next) => {
     res.locals.messages = req.flash();
+    res.locals.query = req.query.q || '';
+    next();
+});
+
+// Middleware để kiểm tra đăng nhập và truyền vào views
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session && req.session.user ? true : false;
+    res.locals.user = req.session ? req.session.user : null;
     next();
 });
 

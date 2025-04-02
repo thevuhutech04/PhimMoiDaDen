@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const dbConfig = require("./db");
+const dbConfig = require("../config/db");
 
 // Lấy danh sách phim
 const getAllMovies = async () => {
@@ -58,11 +58,61 @@ const getLatestMovies = async (limit) => {
     return result.recordset;
 };
 
+// Tìm kiếm phim
+const searchMovies = async (query) => {
+    try {
+        console.log('Connecting to database...');
+        let pool = await sql.connect(dbConfig);
+        console.log('Connected to database');
+
+        console.log('Preparing search query...');
+        const request = pool.request();
+        request.input('searchQuery', sql.NVarChar, `%${query}%`);
+        
+        console.log('Executing search query...');
+        const result = await request.query(`
+            SELECT 
+                movie_id, 
+                title, 
+                description, 
+                poster_url, 
+                video_url, 
+                created_at,
+                genre
+            FROM Movies
+            WHERE 
+                title LIKE @searchQuery 
+                OR description LIKE @searchQuery
+                OR genre LIKE @searchQuery
+            ORDER BY 
+                CASE 
+                    WHEN title LIKE @searchQuery THEN 1
+                    WHEN description LIKE @searchQuery THEN 2
+                    WHEN genre LIKE @searchQuery THEN 3
+                    ELSE 4
+                END,
+                created_at DESC
+        `);
+        
+        console.log('Search completed. Found records:', result.recordset.length);
+        return result.recordset;
+    } catch (err) {
+        console.error('Error in searchMovies:', err);
+        console.error('Error details:', {
+            message: err.message,
+            code: err.code,
+            state: err.state
+        });
+        throw err;
+    }
+};
+
 module.exports = { 
     getAllMovies, 
     getMovieById, 
     getAllGenres, 
     getMoviesByGenre,
     getMoviesByGenreLimit,
-    getLatestMovies 
+    getLatestMovies,
+    searchMovies
 };

@@ -14,6 +14,52 @@
 <body>
     <%- include('../partials/header') %>
 
+    <!-- Modal Đăng Nhập -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Nhập</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Mật khẩu" required>
+                </div>
+                <button type="submit">Đăng Nhập</button>
+            </form>
+            <p class="switch-form">
+                Chưa có tài khoản? <a href="#" id="switch-to-register">Đăng ký ngay</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal Đăng Ký -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Đăng Ký</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <input type="text" name="username" placeholder="Tên người dùng" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Mật khẩu" required>
+                </div>
+                <button type="submit">Đăng Ký</button>
+            </form>
+            <p class="switch-form">
+                Đã có tài khoản? <a href="#" id="switch-to-login">Đăng nhập</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Thêm SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <main class="movie-detail">
         <div class="movie-detail-container">
             <div class="movie-poster">
@@ -33,8 +79,12 @@
                     <a href="/watch/<%= movie.movie_id %>" class="watch-btn">
                         <i class="fas fa-play"></i> Xem Phim
                     </a>
-                    <% if (isAuthenticated) { %>
-                        <button class="favorite-btn" onclick="toggleFavorite(<%= movie.movie_id %>)">
+                    <% if (locals.isAuthenticated) { %>
+                        <button class="favorite-btn" onclick="handleFavoriteClick(<%= movie.movie_id %>)" id="favoriteBtn">
+                            <i class="fas fa-heart"></i> Yêu Thích
+                        </button>
+                    <% } else { %>
+                        <button class="favorite-btn" onclick="showLoginModal()">
                             <i class="fas fa-heart"></i> Yêu Thích
                         </button>
                     <% } %>
@@ -116,7 +166,7 @@
             gap: 0.5rem;
             text-decoration: none;
             border: none;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
 
         .watch-btn {
@@ -137,6 +187,23 @@
             background-color: #444;
         }
 
+        .favorite-btn.active {
+            background-color: #e50914;
+        }
+
+        .favorite-btn.active:hover {
+            background-color: #f40612;
+        }
+
+        .favorite-btn.login-required {
+            background-color: #666;
+            cursor: pointer;
+        }
+
+        .favorite-btn.login-required:hover {
+            background-color: #777;
+        }
+
         @media (max-width: 768px) {
             .movie-detail-container {
                 flex-direction: column;
@@ -148,10 +215,161 @@
                 margin: 0 auto;
             }
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            color: white;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .close:hover {
+            color: white;
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .form-group input::placeholder {
+            color: #888;
+        }
+
+        .modal form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #e50914;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .modal form button:hover {
+            background-color: #f40612;
+        }
+
+        .switch-form {
+            margin-top: 15px;
+            text-align: center;
+            color: #888;
+        }
+
+        .switch-form a {
+            color: #e50914;
+            text-decoration: none;
+        }
+
+        .switch-form a:hover {
+            text-decoration: underline;
+        }
     </style>
 
     <script>
-        async function toggleFavorite(movieId) {
+        // Hàm hiển thị modal đăng nhập
+        function showLoginModal() {
+            const loginModal = document.getElementById('login-modal');
+            loginModal.style.display = 'flex';
+            setTimeout(() => loginModal.classList.add('active'), 10);
+        }
+
+        // Xử lý đóng modal khi click vào nút đóng hoặc bên ngoài modal
+        document.querySelectorAll('.modal .close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                const modal = this.closest('.modal');
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 300);
+            });
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+                setTimeout(() => e.target.style.display = 'none', 300);
+            }
+        });
+
+        // Kiểm tra trạng thái yêu thích khi trang load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const favoriteBtn = document.getElementById('favoriteBtn');
+            if (favoriteBtn && !favoriteBtn.classList.contains('login-required')) {
+                try {
+                    const response = await fetch(`/api/favorites/check/<%= movie.movie_id %>`);
+                    const data = await response.json();
+                    updateFavoriteButton(data.isFavorite);
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi kiểm tra trạng thái yêu thích',
+                        icon: 'error'
+                    });
+                }
+            }
+        });
+
+        // Hàm cập nhật trạng thái nút yêu thích
+        function updateFavoriteButton(isFavorite) {
+            const favoriteBtn = document.getElementById('favoriteBtn');
+            if (favoriteBtn) {
+                favoriteBtn.innerHTML = isFavorite ? 
+                    '<i class="fas fa-heart"></i> Đã Yêu Thích' : 
+                    '<i class="fas fa-heart"></i> Yêu Thích';
+                favoriteBtn.classList.toggle('active', isFavorite);
+            }
+        }
+
+        // Hàm xử lý click yêu thích
+        async function handleFavoriteClick(movieId) {
             try {
                 const response = await fetch('/api/favorites/toggle', {
                     method: 'POST',
@@ -164,18 +382,51 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    const favoriteBtn = document.querySelector('.favorite-btn');
-                    favoriteBtn.innerHTML = data.isFavorite ? 
-                        '<i class="fas fa-heart"></i> Đã Yêu Thích' : 
-                        '<i class="fas fa-heart"></i> Yêu Thích';
+                    updateFavoriteButton(data.isFavorite);
+                    // Hiển thị thông báo
+                    Swal.fire({
+                        title: data.message,
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 } else {
-                    alert(data.message || 'Có lỗi xảy ra');
+                    Swal.fire({
+                        title: 'Lỗi',
+                        text: data.message,
+                        icon: 'error'
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra khi thực hiện yêu cầu');
+                Swal.fire({
+                    title: 'Lỗi',
+                    text: 'Có lỗi xảy ra khi thực hiện yêu cầu',
+                    icon: 'error'
+                });
             }
         }
+
+        // Xử lý chuyển đổi giữa các form
+        document.getElementById('switch-to-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('login-modal').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('login-modal').style.display = 'none';
+                document.getElementById('register-modal').style.display = 'flex';
+                setTimeout(() => document.getElementById('register-modal').classList.add('active'), 10);
+            }, 300);
+        });
+
+        document.getElementById('switch-to-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('register-modal').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('register-modal').style.display = 'none';
+                document.getElementById('login-modal').style.display = 'flex';
+                setTimeout(() => document.getElementById('login-modal').classList.add('active'), 10);
+            }, 300);
+        });
     </script>
 </body>
 </html> 

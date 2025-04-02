@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="search-results">
+        <div class="container">
+            <h1>Kết quả tìm kiếm cho "<%= query %>"</h1>
+            
+            <% if (movies && movies.length > 0) { %>
+                <div class="movies-grid">
+                    <% movies.forEach(function(movie) { %>
+                        <div class="movie-card">
+                            <a href="/watch/<%= movie.movie_id %>">
+                                <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
+                                <div class="movie-info">
+                                    <h3><%= movie.title %></h3>
+                                    <p class="year"><%= new Date(movie.created_at).getFullYear() %></p>
+                                </div>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="no-results">
+                    <p>Không tìm thấy phim nào phù hợp với từ khóa "<%= query %>"</p>
+                    <a href="/" class="back-home">Về trang chủ</a>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <style>
+        .search-results {
+            padding: 80px 0 40px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .search-results .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .search-results h1 {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .movie-card {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            padding: 15px;
+            color: white;
+        }
+
+        .movie-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .movie-info .year {
+            margin: 0;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            color: white;
+        }
+
+        .no-results p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .back-home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #ff4444;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .back-home:hover {
+            background: #ff6666;
+        }
+    </style>
+
+    <%- include('../partials/footer') %>
+</body>
+</html> 

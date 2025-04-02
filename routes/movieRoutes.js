@@ -4,6 +4,7 @@ const movieController = require("../controllers/movieController");
 const db = require("../config/db");
 const { isAuthenticated } = require("../middlewares/authMiddleware");
 const CommentController = require('../controllers/commentController');
+const searchController = require('../controllers/searchController');
 
 // Route lấy tất cả phim và hiển thị trên trang chủ
 router.get("/", movieController.getAllMovies);
@@ -13,6 +14,9 @@ router.get("/movies/:id", movieController.getMovieById);
 
 // Route cho trang xem phim
 router.get('/watch/:id', movieController.watchMovie);
+
+// Route tìm kiếm phim
+router.get('/search', searchController.searchMovies);
 
 // Route cho trang chi tiết phim
 router.get('/movie/:id', async (req, res) => {
@@ -92,5 +96,11 @@ router.get('/favorites', isAuthenticated, async (req, res) => {
 
 // Route xử lý comment
 router.post('/comment/:movieId', isAuthenticated, CommentController.createComment);
+
+// Route hiển thị form thêm phim
+router.get('/add-movie', isAuthenticated, movieController.showAddMovieForm);
+
+// API thêm phim mới
+router.post('/api/movies/add', isAuthenticated, movieController.addMovie);
 
 module.exports = router;
