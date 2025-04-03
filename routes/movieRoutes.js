@@ -9,6 +9,9 @@ const searchController = require('../controllers/searchController');
 // Route lấy tất cả phim và hiển thị trên trang chủ
 router.get("/", movieController.getAllMovies);
 
+// Route hiển thị trang phim mới
+router.get("/movies", movieController.showNewMovies);
+
 // Route lấy phim theo ID
 router.get("/movies/:id", movieController.getMovieById);
 
@@ -100,7 +103,19 @@ router.post('/comment/:movieId', isAuthenticated, CommentController.createCommen
 // Route hiển thị form thêm phim
 router.get('/add-movie', isAuthenticated, movieController.showAddMovieForm);
 
-// API thêm phim mới
+// Route xử lý thêm phim
 router.post('/api/movies/add', isAuthenticated, movieController.addMovie);
+
+// Route xử lý xóa phim
+router.delete('/api/movies/:id', movieController.deleteMovie);
+
+// Route hiển thị form sửa phim
+router.get('/edit-movie/:id', movieController.showEditMovieForm);
+
+// Route xử lý cập nhật phim
+router.put('/api/movies/:id', movieController.updateMovie);
+
+// Route tăng lượt xem phim
+router.post('/api/movies/:id/increment-views', movieController.incrementViews);
 
 module.exports = router;

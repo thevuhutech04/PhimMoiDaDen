@@ -64,11 +64,14 @@
                         <div class="movie-grid">
                             <% moviesByGenre[genre].forEach(function(movie) { %>
                                 <div class="movie-card">
-                                    <a href="/movie/<%= movie.movie_id %>">
+                                    <a href="/movie/<%= movie.movie_id %>" onclick="incrementViews(<%= movie.movie_id %>, event)">
                                         <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
                                         <div class="movie-overlay">
                                             <h3><%= movie.title %></h3>
                                             <p><%= movie.created_at ? new Date(movie.created_at).getFullYear() : 'N/A' %></p>
+                                            <p class="views-count" data-movie-id="<%= movie.movie_id %>">
+                                                <i class="fas fa-eye"></i> <%= movie.views || 0 %> lượt xem
+                                            </p>
                                         </div>
                                     </a>
                                 </div>
@@ -430,6 +433,35 @@ if (loginForm) {
             genreList.appendChild(li);
         });
     });
+
+    // Hàm tăng lượt xem
+    async function incrementViews(movieId, event) {
+        try {
+            // Gửi request tăng views
+            const response = await fetch(`/api/movies/${movieId}/increment-views`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                // Cập nhật số lượt xem trên giao diện
+                const viewsElement = document.querySelector(`[data-movie-id="${movieId}"] .views-count`);
+                if (viewsElement) {
+                    const currentViews = parseInt(viewsElement.textContent.match(/\d+/)[0]);
+                    viewsElement.innerHTML = `<i class="fas fa-eye"></i> ${currentViews + 1} lượt xem`;
+                }
+            } else {
+                console.error('Lỗi khi tăng lượt xem:', await response.text());
+            }
+        } catch (error) {
+            console.error('Lỗi khi tăng lượt xem:', error);
+        }
+        
+        // Cho phép chuyển trang bình thường
+        return true;
+    }
 </script>
 
 <!-- Thêm script data -->
@@ -583,6 +615,19 @@ if (loginForm) {
         border-radius: 8px;
         transition: transform 0.3s ease;
         cursor: pointer;
+    }
+
+    .movie-overlay p.views-count {
+        margin: 5px 0 0 0;
+        font-size: 0.8rem;
+        color: #ffd700;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .movie-overlay p.views-count i {
+        font-size: 0.9rem;
     }
 </style>
 

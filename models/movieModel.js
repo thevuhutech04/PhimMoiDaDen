@@ -10,11 +10,22 @@ const getAllMovies = async () => {
 
 // Lấy phim theo ID
 const getMovieById = async (id) => {
-    let pool = await sql.connect(dbConfig);
-    let result = await pool.request()
-        .input("id", sql.Int, id)
-        .query("SELECT * FROM Movies WHERE movie_id = @id");
-    return result.recordset[0];
+    try {
+        let pool = await sql.connect(dbConfig);
+        let result = await pool.request()
+            .input("id", sql.Int, id)
+            .query("SELECT * FROM Movies WHERE movie_id = @id");
+            
+        if (result.recordset.length === 0) {
+            console.log(`No movie found with ID: ${id}`);
+            return null;
+        }
+        
+        return result.recordset[0];
+    } catch (error) {
+        console.error('Error in getMovieById:', error);
+        throw error;
+    }
 };
 
 // Lấy danh sách thể loại (genre) duy nhất

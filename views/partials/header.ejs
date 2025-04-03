@@ -5,8 +5,18 @@
         </div>
         <nav>
             <ul>
-                <li><a href="/">Trang chủ</a></li>
-                <li><a href="/movies">Phim Mới</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Trang Chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/movies">Phim Mới</a>
+                </li>
+                <% console.log('User in header:', user); %>
+                <% if (user && user.role_id === 1) { %>
+                <li class="nav-item">
+                    <a class="nav-link" href="/add-movie">Thêm Phim</a>
+                </li>
+                <% } %>
                 <li class="dropdown">
                     <a href="#">Thể Loại</a>
                     <ul class="dropdown-menu">
@@ -16,9 +26,6 @@
                         <li><a href="/#tinh-cam">Tình cảm</a></li>
                     </ul>
                 </li>
-                <% if (isAuthenticated) { %>
-                    <li><a href="/add-movie" class="add-movie-link"><i class="fas fa-plus"></i> Thêm Phim</a></li>
-                <% } %>
                 <li><a href="/contact">Liên Hệ</a></li>
             </ul>
         </nav>

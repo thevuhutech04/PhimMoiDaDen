@@ -88,6 +88,14 @@
                             <i class="fas fa-heart"></i> Yêu Thích
                         </button>
                     <% } %>
+                    <% if (locals.user && locals.user.role_id === 1) { %>
+                        <a href="/edit-movie/<%= movie.movie_id %>" class="edit-btn">
+                            <i class="fas fa-edit"></i> Sửa Phim
+                        </a>
+                        <button class="delete-btn" onclick="confirmDelete('<%= movie.movie_id %>')">
+                            <i class="fas fa-trash"></i> Xóa Phim
+                        </button>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -154,9 +162,10 @@
         .movie-actions {
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .watch-btn, .favorite-btn {
+        .watch-btn, .favorite-btn, .edit-btn, .delete-btn {
             padding: 0.8rem 1.5rem;
             border-radius: 4px;
             font-size: 1.1rem;
@@ -204,6 +213,24 @@
             background-color: #777;
         }
 
+        .edit-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
         @media (max-width: 768px) {
             .movie-detail-container {
                 flex-direction: column;
@@ -213,6 +240,15 @@
                 flex: 0 0 auto;
                 max-width: 300px;
                 margin: 0 auto;
+            }
+
+            .movie-actions {
+                flex-direction: column;
+            }
+
+            .watch-btn, .favorite-btn, .edit-btn, .delete-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -427,6 +463,53 @@
                 setTimeout(() => document.getElementById('login-modal').classList.add('active'), 10);
             }, 300);
         });
+
+        // Hàm xác nhận xóa phim
+        async function confirmDelete(movieId) {
+            const result = await Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Bạn sẽ không thể khôi phục phim này!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/api/movies/${movieId}`, {
+                        method: 'DELETE'
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Đã xóa!',
+                            text: 'Phim đã được xóa thành công.',
+                            icon: 'success'
+                        }).then(() => {
+                            window.location.href = '/';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: data.message || 'Có lỗi xảy ra khi xóa phim',
+                            icon: 'error'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra khi xóa phim',
+                        icon: 'error'
+                    });
+                }
+            }
+        }
     </script>
 </body>
 </html> 

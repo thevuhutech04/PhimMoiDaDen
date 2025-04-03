@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phim Mới | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="new-movies">
+        <div class="container">
+            <h1 class="page-title">Phim Mới</h1>
+            
+            <div class="movies-grid">
+                <% movies.forEach(movie => { %>
+                    <div class="movie-card">
+                        <a href="/movie/<%= movie.movie_id %>" class="movie-link" onclick="incrementViews(<%= movie.movie_id %>, event)">
+                            <div class="movie-poster">
+                                <img src="<%= movie.poster_url %>" alt="<%= movie.title %>">
+                                <div class="movie-overlay">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                            <div class="movie-info">
+                                <h3 class="movie-title"><%= movie.title %></h3>
+                                <div class="movie-meta">
+                                    <span class="movie-genre"><%= movie.genre %></span>
+                                    <span class="movie-views" data-movie-id="<%= movie.movie_id %>">
+                                        <i class="fas fa-eye"></i> <%= movie.views || 0 %>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <style>
+        .new-movies {
+            padding: 2rem 0;
+            background-color: #1a1a1a;
+            min-height: calc(100vh - 60px);
+            perspective: 1000px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            padding-bottom: 1rem;
+            position: sticky;
+            top: 80px;
+            z-index: 10;
+            background: linear-gradient(to bottom, #1a1a1a 0%, rgba(26, 26, 26, 0.9) 100%);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #e50914, transparent);
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 3rem;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .movie-card {
+            background-color: #2a2a2a;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-15px) rotateX(5deg) rotateY(5deg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .movie-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .movie-poster {
+            position: relative;
+            padding-top: 150%;
+            transform-style: preserve-3d;
+            overflow: hidden;
+        }
+
+        .movie-poster img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .movie-card:hover .movie-poster img {
+            transform: scale(1.15);
+        }
+
+        .movie-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            transform: translateZ(20px);
+        }
+
+        .movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+
+        .movie-overlay i {
+            font-size: 4rem;
+            color: white;
+            text-shadow: 0 0 15px rgba(0,0,0,0.7);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover .movie-overlay i {
+            transform: scale(1);
+        }
+
+        .movie-info {
+            padding: 1.5rem;
+            background: linear-gradient(to bottom, #2a2a2a 0%, #1a1a1a 100%);
+            transform: translateZ(10px);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .movie-title {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #888;
+            font-size: 1rem;
+            margin-top: auto;
+        }
+
+        .movie-genre {
+            background-color: rgba(51, 51, 51, 0.8);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover .movie-genre {
+            background-color: #e50914;
+            color: white;
+        }
+
+        .movie-views {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover .movie-views {
+            color: #e50914;
+        }
+
+        .movie-views i {
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover .movie-views i {
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 1200px) {
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1.5rem;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .movie-title {
+                font-size: 1.1rem;
+            }
+
+            .movie-meta {
+                font-size: 0.9rem;
+            }
+
+            .movie-card:hover {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .movie-title {
+                font-size: 1rem;
+            }
+
+            .movie-meta {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Hàm tăng lượt xem
+        async function incrementViews(movieId, event) {
+            try {
+                // Gửi request tăng views
+                const response = await fetch(`/api/movies/${movieId}/increment-views`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Cập nhật số lượt xem trên giao diện
+                    const viewsElement = document.querySelector(`[data-movie-id="${movieId}"] .movie-views`);
+                    if (viewsElement) {
+                        const currentViews = parseInt(viewsElement.textContent.match(/\d+/)[0]);
+                        viewsElement.innerHTML = `<i class="fas fa-eye"></i> ${currentViews + 1}`;
+                    }
+                } else {
+                    console.error('Lỗi khi tăng lượt xem:', await response.text());
+                }
+            } catch (error) {
+                console.error('Lỗi khi tăng lượt xem:', error);
+            }
+            
+            // Cho phép chuyển trang bình thường
+            return true;
+        }
+    </script>
+</body>
+</html> 

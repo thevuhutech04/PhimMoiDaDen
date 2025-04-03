@@ -5,6 +5,7 @@ const routes = require('./routes');
 const movieRoutes = require('./routes/movieRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const userRoutes = require("./routes/userRoutes");
+const authRoutes = require('./routes/auth');
 const flash = require('connect-flash');
 
 const app = express();
@@ -48,6 +49,7 @@ app.use('/', routes);
 app.use('/', movieRoutes);
 app.use('/', favoriteRoutes);
 app.use('/', userRoutes);
+app.use('/', authRoutes);
 
 // Error handling
 app.use((req, res, next) => {

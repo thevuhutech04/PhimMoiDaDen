@@ -6,65 +6,66 @@ const register = async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        // Validation đầu vào
-        if (!username || !email || !password) {
-            return res.status(400).json({ message: 'Vui lòng cung cấp đầy đủ username, email và password' });
-        }
-
-        // Kiểm tra username đã tồn tại
-        const checkUsername = await db.pool.request()
-            .input('username', username)
-            .query('SELECT * FROM Users WHERE username = @username');
-
-        if (checkUsername.recordset.length > 0) {
-            return res.status(400).json({ message: 'Tên đăng nhập đã tồn tại' });
-        }
-
-        // Kiểm tra email đã tồn tại
-        const checkEmail = await db.pool.request()
+        // Kiểm tra email đã tồn tại chưa
+        const emailCheck = await db.pool.request()
             .input('email', email)
             .query('SELECT * FROM Users WHERE email = @email');
 
-        if (checkEmail.recordset.length > 0) {
-            return res.status(400).json({ message: 'Email đã được sử dụng' });
+        if (emailCheck.recordset.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Email đã được sử dụng. Vui lòng sử dụng email khác."
+            });
+        }
+
+        // Kiểm tra username đã tồn tại chưa
+        const usernameCheck = await db.pool.request()
+            .input('username', username)
+            .query('SELECT * FROM Users WHERE username = @username');
+
+        if (usernameCheck.recordset.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Tên đăng nhập đã được sử dụng. Vui lòng chọn tên khác."
+            });
         }
 
         // Mã hóa mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Thêm user mới vào database, dùng giá trị số cho role (1 = user)
+        // Thêm người dùng mới vào database
         const result = await db.pool.request()
             .input('username', username)
             .input('email', email)
             .input('password', hashedPassword)
-            .input('role', 1) // Sửa thành giá trị số thay vì chuỗi 'user'
+            .input('role_id', 2)
             .query(`
-                INSERT INTO Users (username, email, password, role)
-                VALUES (@username, @email, @password, @role);
-                SELECT SCOPE_IDENTITY() AS user_id;
+                INSERT INTO Users (username, email, password, role_id)
+                VALUES (@username, @email, @password, @role_id)
             `);
 
-        const userId = result.recordset[0].user_id;
-
-        // Tạo session
+        // Tạo session cho user mới
         req.session.isAuthenticated = true;
         req.session.user = {
-            id: userId,
             username: username,
-            email: email
+            email: email,
+            role_id: 2
         };
 
-        res.json({ 
-            success: true, 
-            message: 'Đăng ký thành công',
-            user: {
-                username: username,
-                email: email
+        res.status(201).json({
+            success: true,
+            message: "Đăng ký thành công!",
+            data: {
+                username,
+                email
             }
         });
     } catch (error) {
-        console.error('Lỗi đăng ký:', error.message, error.stack);
-        res.status(500).json({ message: 'Đã xảy ra lỗi khi đăng ký', error: error.message });
+        console.error('Lỗi khi đăng ký:', error);
+        res.status(500).json({
+            success: false,
+            message: "Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại sau."
+        });
     }
 };
 
@@ -94,7 +95,8 @@ const login = async (req, res) => {
         req.session.user = {
             id: user.user_id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            role_id: user.role_id
         };
 
         res.json({ 
@@ -102,7 +104,8 @@ const login = async (req, res) => {
             message: 'Đăng nhập thành công',
             user: {
                 username: user.username,
-                email: user.email
+                email: user.email,
+                role_id: user.role_id
             }
         });
     } catch (error) {

@@ -67,7 +67,7 @@ const showMovieDetail = async (req, res) => {
             });
         }
 
-        res.render("pages/movie-detail", { 
+        res.render("pages/movie-detail", {
             movie,
             user: req.session.user
         });
@@ -96,6 +96,14 @@ const showAddMovieForm = async (req, res) => {
 // Xử lý thêm phim mới
 const addMovie = async (req, res) => {
     try {
+        // Kiểm tra quyền admin
+        if (!req.session.user || req.session.user.role_id !== 1) {
+            return res.status(403).json({
+                success: false,
+                message: 'Bạn không có quyền thêm phim. Chỉ admin mới có quyền này.'
+            });
+        }
+
         console.log('Request body:', req.body);
         const { title, description, genre, poster_url, video_url } = req.body;
 
@@ -187,11 +195,195 @@ const addMovie = async (req, res) => {
     }
 };
 
+// Xóa phim
+const deleteMovie = async (req, res) => {
+    try {
+        // Kiểm tra quyền admin
+        if (!req.session.user || req.session.user.role_id !== 1) {
+            return res.status(403).json({
+                success: false,
+                message: 'Bạn không có quyền xóa phim'
+            });
+        }
+
+        const movieId = req.params.id;
+
+        // Xóa phim khỏi database
+        await db.pool.request()
+            .input('movie_id', movieId)
+            .query('DELETE FROM Movies WHERE movie_id = @movie_id');
+
+        res.json({
+            success: true,
+            message: 'Xóa phim thành công'
+        });
+    } catch (error) {
+        console.error('Lỗi xóa phim:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Đã xảy ra lỗi khi xóa phim',
+            error: error.message
+        });
+    }
+};
+
+// Hiển thị form sửa phim
+const showEditMovieForm = async (req, res) => {
+    try {
+        // Kiểm tra quyền admin
+        if (!req.session.user || req.session.user.role_id !== 1) {
+            console.log('User not authorized:', req.session.user);
+            return res.status(403).render('error', {
+                message: 'Bạn không có quyền sửa phim',
+                user: req.session.user
+            });
+        }
+
+        const movieId = req.params.id;
+        console.log('Fetching movie with ID:', movieId);
+        
+        const movie = await movieModel.getMovieById(movieId);
+        console.log('Movie data:', JSON.stringify(movie, null, 2));
+
+        if (!movie) {
+            console.log('Movie not found');
+            return res.status(404).render('error', {
+                message: 'Không tìm thấy phim',
+                user: req.session.user
+            });
+        }
+
+        console.log('Rendering edit-movie template with movie:', JSON.stringify(movie, null, 2));
+        res.render('pages/edit-movie', {
+            movie,
+            user: req.session.user
+        });
+    } catch (error) {
+        console.error('Error in showEditMovieForm:', error);
+        res.status(500).render('error', {
+            message: 'Lỗi server',
+            user: req.session.user
+        });
+    }
+};
+
+// Cập nhật phim
+const updateMovie = async (req, res) => {
+    try {
+        // Kiểm tra quyền admin
+        if (!req.session.user || req.session.user.role_id !== 1) {
+            return res.status(403).json({
+                success: false,
+                message: 'Bạn không có quyền sửa phim'
+            });
+        }
+
+        const movieId = req.params.id;
+        const { title, description, genre, poster_url, video_url } = req.body;
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!title || !description || !genre || !poster_url || !video_url) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui lòng điền đầy đủ thông tin'
+            });
+        }
+
+        // Cập nhật phim trong database
+        await db.pool.request()
+            .input('movie_id', movieId)
+            .input('title', title)
+            .input('description', description)
+            .input('genre', genre)
+            .input('poster_url', poster_url)
+            .input('video_url', video_url)
+            .query(`
+                UPDATE Movies 
+                SET title = @title,
+                    description = @description,
+                    genre = @genre,
+                    poster_url = @poster_url,
+                    video_url = @video_url
+                WHERE movie_id = @movie_id
+            `);
+
+        res.json({
+            success: true,
+            message: 'Cập nhật phim thành công'
+        });
+    } catch (error) {
+        console.error('Lỗi cập nhật phim:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Đã xảy ra lỗi khi cập nhật phim',
+            error: error.message
+        });
+    }
+};
+
+// Hiển thị trang phim mới
+const showNewMovies = async (req, res) => {
+    try {
+        const result = await db.pool.request()
+            .query(`
+                SELECT TOP 12 * FROM Movies 
+                ORDER BY created_at DESC
+            `);
+
+        const movies = result.recordset;
+        
+        res.render('pages/new-movies', {
+            title: 'Phim Mới',
+            movies: movies,
+            isAuthenticated: req.session.isAuthenticated,
+            user: req.session.user
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách phim mới:', error);
+        res.status(500).render('pages/error', {
+            title: 'Lỗi',
+            message: 'Đã xảy ra lỗi khi tải danh sách phim mới'
+        });
+    }
+};
+
+// Tăng lượt xem phim
+const incrementViews = async (req, res) => {
+    try {
+        const movieId = req.params.id;
+        
+        // Tăng views lên 1
+        await db.pool.request()
+            .input('movie_id', movieId)
+            .query(`
+                UPDATE Movies 
+                SET views = views + 1 
+                WHERE movie_id = @movie_id
+            `);
+
+        res.json({
+            success: true,
+            message: 'Đã tăng lượt xem'
+        });
+    } catch (error) {
+        console.error('Lỗi khi tăng lượt xem:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi khi tăng lượt xem'
+        });
+    }
+};
+
 module.exports = { 
     getAllMovies, 
     getMovieById,
     watchMovie,
     showMovieDetail,
     showAddMovieForm,
-    addMovie
+    addMovie,
+    deleteMovie,
+    showEditMovieForm,
+    updateMovie,
+    showNewMovies,
+    incrementViews
 };

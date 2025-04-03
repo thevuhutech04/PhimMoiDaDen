@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sửa Phim | PhimMoiDaDen</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Thêm SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="add-movie-container">
+        <h1>Sửa Phim</h1>
+        
+        <form id="editMovieForm" class="add-movie-form">
+            <input type="hidden" id="movieId" value="<%= movie.movie_id %>">
+            
+            <div class="form-group">
+                <label for="title">Tên Phim</label>
+                <input type="text" id="title" name="title" value="<%= movie.title %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Mô Tả</label>
+                <textarea id="description" name="description" rows="4" required><%= movie.description %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="genre">Thể Loại</label>
+                <select id="genre" name="genre" required>
+                    <option value="">Chọn thể loại</option>
+                    <option value="Hành động" <%= movie.genre === 'Hành động' ? 'selected' : '' %>>Hành động</option>
+                    <option value="Hài hước" <%= movie.genre === 'Hài hước' ? 'selected' : '' %>>Hài hước</option>
+                    <option value="Kinh dị" <%= movie.genre === 'Kinh dị' ? 'selected' : '' %>>Kinh dị</option>
+                    <option value="Tình cảm" <%= movie.genre === 'Tình cảm' ? 'selected' : '' %>>Tình cảm</option>
+                    <option value="Hoạt hình" <%= movie.genre === 'Hoạt hình' ? 'selected' : '' %>>Hoạt hình</option>
+                    <option value="Viễn tưởng" <%= movie.genre === 'Viễn tưởng' ? 'selected' : '' %>>Viễn tưởng</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="poster_url">URL Poster</label>
+                <input type="url" id="poster_url" name="poster_url" value="<%= movie.poster_url %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="video_url">URL Video</label>
+                <input type="url" id="video_url" name="video_url" value="<%= movie.video_url %>" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Cập nhật phim</button>
+                <button type="button" class="delete-btn" onclick="confirmDelete('<%= movie.movie_id %>')">Xóa phim</button>
+                <a href="/movie/<%= movie.movie_id %>" class="cancel-btn">Hủy</a>
+            </div>
+        </form>
+    </main>
+
+    <style>
+        .add-movie-container {
+            max-width: 800px;
+            margin: 80px auto 20px;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .add-movie-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e50914;
+        }
+
+        .add-movie-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .submit-btn {
+            padding: 12px 24px;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #f40612;
+        }
+
+        .delete-btn {
+            padding: 12px 24px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .cancel-btn {
+            padding: 12px 24px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .cancel-btn:hover {
+            background: #444;
+        }
+
+        @media (max-width: 768px) {
+            .add-movie-container {
+                margin: 60px 10px 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .submit-btn,
+            .delete-btn,
+            .cancel-btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        // Hàm xác nhận xóa phim
+        function confirmDelete(movieId) {
+            console.log('Attempting to delete movie with ID:', movieId);
+            
+            Swal.fire({
+                title: 'Bạn có chắc chắn?',
+                text: "Bạn sẽ không thể khôi phục phim này!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        console.log('Sending DELETE request for movie ID:', movieId);
+                        const response = await fetch(`/api/movies/${movieId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        console.log('Delete response status:', response.status);
+                        const data = await response.json();
+                        console.log('Delete response data:', data);
+
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Đã xóa!',
+                                text: 'Phim đã được xóa thành công.',
+                                icon: 'success'
+                            }).then(() => {
+                                window.location.href = '/';
+                            });
+                        } else {
+                            throw new Error(data.message || 'Có lỗi xảy ra khi xóa phim');
+                        }
+                    } catch (error) {
+                        console.error('Lỗi xóa phim:', error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: error.message || 'Đã xảy ra lỗi khi xóa phim',
+                            icon: 'error'
+                        });
+                    }
+                }
+            });
+        }
+
+        document.getElementById('editMovieForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const movieId = document.getElementById('movieId').value;
+            const movieData = {};
+            
+            // Lấy và kiểm tra từng trường dữ liệu
+            movieData.title = formData.get('title')?.trim();
+            movieData.description = formData.get('description')?.trim();
+            movieData.genre = formData.get('genre')?.trim();
+            movieData.poster_url = formData.get('poster_url')?.trim();
+            movieData.video_url = formData.get('video_url')?.trim();
+
+            // Log dữ liệu trước khi gửi
+            console.log('Form Data:', movieData);
+
+            // Kiểm tra dữ liệu trước khi gửi
+            const missingFields = [];
+            if (!movieData.title) missingFields.push('Tên phim');
+            if (!movieData.description) missingFields.push('Mô tả');
+            if (!movieData.genre) missingFields.push('Thể loại');
+            if (!movieData.poster_url) missingFields.push('URL Poster');
+            if (!movieData.video_url) missingFields.push('URL Video');
+
+            if (missingFields.length > 0) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: `Vui lòng điền: ${missingFields.join(', ')}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/movies/${movieId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(movieData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Cập nhật phim thành công',
+                        icon: 'success'
+                    }).then(() => {
+                        window.location.href = `/movie/${movieId}`;
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: data.message || 'Đã xảy ra lỗi khi cập nhật phim',
+                        icon: 'error'
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi:', error);
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Đã xảy ra lỗi khi cập nhật phim',
+                    icon: 'error'
+                });
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>
+</body>
+</html> 
